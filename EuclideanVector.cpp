@@ -2,14 +2,9 @@
 #include "EuclideanVector.h"
 
 namespace evec{
-	EuclideanVector::EuclideanVector(unsigned int dim) {
-		vector_ = new double[dim]();
-		dimension_ = dim;
-	}
+	EuclideanVector::EuclideanVector(unsigned int dim) : vector_{new double[dim]()}, dimension_{dim} { }
 
-	EuclideanVector::EuclideanVector(unsigned int dim, double mag) {
-		vector_ = new double[dim];
-		dimension_ = dim;
+	EuclideanVector::EuclideanVector(unsigned int dim, double mag) : EuclideanVector(dim) {
 		std::fill_n(vector_, dim, mag);
 	}
 
@@ -23,12 +18,12 @@ namespace evec{
 		(void)last;
 	}
 
-	EuclideanVector::EuclideanVector(const std::initializer_list<double>& list) {
-		(void)list;
+	EuclideanVector::EuclideanVector(const std::initializer_list<double>& list) : EuclideanVector(list.size()) {
+		std::copy(list.begin(), list.end(), vector_);
 	}
 
-	EuclideanVector::EuclideanVector(const EuclideanVector& other) {
-		(void)other;
+	EuclideanVector::EuclideanVector(const EuclideanVector& other) : EuclideanVector(other.dimension_) {
+		std::copy(other.vector_, other.vector_ + other.dimension_, vector_);
 	}
 
 	EuclideanVector::EuclideanVector(EuclideanVector&& other) {
