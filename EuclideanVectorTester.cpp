@@ -34,6 +34,15 @@ int main() {
 	evec::EuclideanVector g = std::move(f);
 	std::cout << g << std::endl;
 	std::cout << f << std::endl;
+
+	f = g;
+	std::cout << g << std::endl;
+	std::cout << f << std::endl;
+
+	f = std::move(g);
+	std::cout << g << std::endl;
+	std::cout << f << std::endl;
+
 	
 	//// try operator overloading
 	//e += d;

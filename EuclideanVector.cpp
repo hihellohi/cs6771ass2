@@ -8,14 +8,19 @@ namespace evec{
 		std::fill_n(vector_, dim, mag);
 	}
 
-	EuclideanVector::EuclideanVector(const std::vector<double>::iterator& first, const std::vector<double>::iterator& last) {
-		(void)first;
-		(void)last;
+	EuclideanVector::EuclideanVector(const std::vector<double>::iterator& first, const std::vector<double>::iterator& last) : EuclideanVector(last - first) {
+		std::copy(first, last, vector_);
 	}
 
 	EuclideanVector::EuclideanVector(const std::list<double>::iterator& first, const std::list<double>::iterator& last) {
-		(void)first;
-		(void)last;
+		unsigned dim = 0;
+		for(auto it = first; it != last; it++){
+			dim++;
+		}
+
+		vector_ = new double[dim]();
+		dimension_ = dim;
+		std::copy(first, last, vector_);
 	}
 
 	EuclideanVector::EuclideanVector(const std::initializer_list<double>& list) : EuclideanVector(list.size()) {
@@ -26,8 +31,9 @@ namespace evec{
 		std::copy(other.vector_, other.vector_ + other.dimension_, vector_);
 	}
 
-	EuclideanVector::EuclideanVector(EuclideanVector&& other) {
-		(void)other;
+	EuclideanVector::EuclideanVector(EuclideanVector&& other) : vector_{other.vector_}, dimension_{other.dimension_} {
+		other.vector_ = nullptr;
+		other.dimension_ = 0;
 	}
 
 	EuclideanVector::~EuclideanVector() noexcept {
@@ -38,15 +44,37 @@ namespace evec{
 	}
 
 
-	//EuclideanVector::EuclideanVector& operator=(const EuclideanVector& other) {
-	//	(void)other;
-	//	return *this;
-	//}
+	EuclideanVector& EuclideanVector::operator=(const EuclideanVector& other) {
+		if(this != &other) {
+			if(other.vector_ == nullptr){
+				vector_ = nullptr;
+				dimension_ = 0;
+			}
+			else{
+				if(vector_ == nullptr || dimension_ != other.dimension_){
+					this->~EuclideanVector();
+					vector_ = new double[other.dimension_];
+					dimension_ = other.dimension_;
+				}
 
-	//EuclideanVector::EuclideanVector& operator=(EuclideanVector&& other) {
-	//	(void)other;
-	//	return *this;
-	//}
+				std::copy(other.vector_, other.vector_ + dimension_, vector_);
+			}
+		}
+
+		return *this;
+	}
+
+	EuclideanVector& EuclideanVector::operator=(EuclideanVector&& other) {
+		if(this != &other) {
+			this->~EuclideanVector();
+			dimension_ = other.dimension_;
+			vector_ = other.vector_;
+
+			other.vector_ = nullptr;
+			other.dimension_ = 0;
+		}
+		return *this;
+	}
 
 	//EuclideanVector::unsigned int getNumDimensions() const {
 	//	return 0;
@@ -159,5 +187,4 @@ namespace evec{
 
 		return os << ']';
 	}
-
 } //evec

@@ -22,8 +22,8 @@ namespace evec{
 			EuclideanVector(EuclideanVector&&); 
 			~EuclideanVector() noexcept;
 
-			//EuclideanVector& operator=(const EuclideanVector&);
-			//EuclideanVector& operator=(EuclideanVector&&);
+			EuclideanVector& operator=(const EuclideanVector&);
+			EuclideanVector& operator=(EuclideanVector&&);
 			//unsigned int getNumDimensions() const;
 			//double get(unsigned int) const;
 			//double getEuclideanNorm() const;
