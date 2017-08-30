@@ -11,8 +11,10 @@ namespace evec{
 		private:
 			double *vector_;
 			unsigned int dimension_;
+			double norm_;
 
 		public:
+			EuclideanVector();
 			EuclideanVector(unsigned int);
 			EuclideanVector(unsigned int, double);
 			EuclideanVector(const std::vector<double>::iterator&, const std::vector<double>::iterator&);
@@ -24,10 +26,17 @@ namespace evec{
 
 			EuclideanVector& operator=(const EuclideanVector&);
 			EuclideanVector& operator=(EuclideanVector&&);
-			//unsigned int getNumDimensions() const;
-			//double get(unsigned int) const;
-			//double getEuclideanNorm() const;
-			//EuclideanVector createUnitVector() const;
+
+			inline unsigned int getNumDimensions() const {
+				return dimension_;
+			}
+
+			inline double get(unsigned int at) const {
+				return vector_[at];
+			}
+
+			double getEuclideanNorm();
+			EuclideanVector createUnitVector() const;
 			//double operator[](unsigned int) const;
 			//double& operator[](unsigned int);
 			//EuclideanVector& operator+=(const EuclideanVector&);

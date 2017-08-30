@@ -6,7 +6,7 @@
 
 int main() {
 	
-	evec::EuclideanVector a(2);	
+	evec::EuclideanVector a(0);	
 	
 	std::list<double> l {1,2,3};
 	evec::EuclideanVector b{l.begin(),l.end()};
