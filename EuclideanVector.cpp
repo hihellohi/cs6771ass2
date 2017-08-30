@@ -1,44 +1,29 @@
 #include <limits>
 #include <algorithm>
-#include <numeric>
-#include <cmath>
 #include "EuclideanVector.h"
 
 namespace evec{
 	EuclideanVector::EuclideanVector() : EuclideanVector(0) { }
 
-	EuclideanVector::EuclideanVector(unsigned int dim) : vector_{new double[dim]()}, dimension_{dim}, norm_{std::numeric_limits<double>::quiet_NaN()} { }
+	EuclideanVector::EuclideanVector(unsigned int dim) 
+		: vector_{new double[dim]()}, dimension_{dim}, norm_{std::numeric_limits<double>::quiet_NaN()} { }
 
 	EuclideanVector::EuclideanVector(unsigned int dim, double mag) : EuclideanVector(dim) {
 		std::fill_n(vector_, dim, mag);
 	}
 
-	EuclideanVector::EuclideanVector(const std::vector<double>::iterator& first, const std::vector<double>::iterator& last) : EuclideanVector(last - first) {
-		std::copy(first, last, vector_);
-	}
-
-	EuclideanVector::EuclideanVector(const std::list<double>::iterator& first, const std::list<double>::iterator& last) : norm_{std::numeric_limits<double>::quiet_NaN()} {
-		unsigned dim = 0;
-		for(auto it = first; it != last; it++){
-			dim++;
-		}
-
-		vector_ = new double[dim]();
-		dimension_ = dim;
-		std::copy(first, last, vector_);
-	}
-
-	EuclideanVector::EuclideanVector(const std::initializer_list<double>& list) : EuclideanVector(list.size()) {
-		std::copy(list.begin(), list.end(), vector_);
-	}
+	EuclideanVector::EuclideanVector(const std::initializer_list<double>& list) : EuclideanVector(list.begin(), list.end()) { }
 
 	EuclideanVector::EuclideanVector(const EuclideanVector& other) : EuclideanVector(other.dimension_) {
 		std::copy(other.vector_, other.vector_ + other.dimension_, vector_);
 	}
 
-	EuclideanVector::EuclideanVector(EuclideanVector&& other) : vector_{other.vector_}, dimension_{other.dimension_}, norm_{std::numeric_limits<double>::quiet_NaN()} {
+	EuclideanVector::EuclideanVector(EuclideanVector&& other) 
+		: vector_{other.vector_}, dimension_{other.dimension_}, norm_{std::numeric_limits<double>::quiet_NaN()} {
+
 		other.vector_ = nullptr;
 		other.dimension_ = 0;
+		other.norm_ = std::numeric_limits<double>::quiet_NaN();
 	}
 
 	EuclideanVector::~EuclideanVector() noexcept {
@@ -47,6 +32,7 @@ namespace evec{
 			vector_ = nullptr;
 		}
 		dimension_ = 0;
+		norm_ = std::numeric_limits<double>::quiet_NaN();
 	}
 
 
@@ -62,10 +48,10 @@ namespace evec{
 					dimension_ = other.dimension_;
 				}
 
+				norm_ = other.norm_;
 				std::copy(other.vector_, other.vector_ + dimension_, vector_);
 			}
 		}
-
 		return *this;
 	}
 
@@ -74,50 +60,58 @@ namespace evec{
 			this->~EuclideanVector();
 			dimension_ = other.dimension_;
 			vector_ = other.vector_;
+			norm_ = other.norm_;
 
 			other.vector_ = nullptr;
 			other.dimension_ = 0;
+			other.norm_ = std::numeric_limits<double>::quiet_NaN();
 		}
 		return *this;
 	}
 
-	double squares(double x, double y) { return x + y * y; }
+	double EuclideanVector::get(unsigned int at) const {
+		return (*this)[at];
+	}
 
 	double EuclideanVector::getEuclideanNorm() {
 		if(std::isnan(norm_)){
-			norm_ = sqrt(std::accumulate(vector_, vector_ + dimension_, 0, squares));
+			norm_ = sqrt(std::accumulate(vector_, vector_ + dimension_, 0, 
+						[](double x, double y) { return x + y * y; }));
 		}
 		return norm_;
 	}
 
-	EuclideanVector EuclideanVector::createUnitVector() const {
-		return (0);
+	EuclideanVector EuclideanVector::createUnitVector() {
+		return *this / getEuclideanNorm();
 	}
 
-	//EuclideanVector::double operator[](unsigned int at) const {
-	//	(void)at;
-	//	return 0;
-	//}
+	double EuclideanVector::operator[](unsigned int at) const {
+		return vector_[at];
+	}
 
-	//EuclideanVector::double& operator[](unsigned int at) {
-	//	return a;
-	//}
+	double& EuclideanVector::operator[](unsigned int at) {
+		return vector_[at];
+	}
 
-	//EuclideanVector::EuclideanVector& operator+=(const EuclideanVector& other) {
-	//	(void)other;
-	//}
+	EuclideanVector& EuclideanVector::operator+=(const EuclideanVector& other) {
+		std::transform(vector_, vector_ + dimension_, other.vector_, vector_, std::plus<double>());
+		return *this;
+	}
 
-	//EuclideanVector::EuclideanVector& operator-=(const EuclideanVector& other) {
-	//	(void)other;
-	//}
+	EuclideanVector& EuclideanVector::operator-=(const EuclideanVector& other) {
+		std::transform(vector_, vector_ + dimension_, other.vector_, vector_, std::minus<double>());
+		return *this;
+	}
 
-	//EuclideanVector::EuclideanVector& operator/=(double div) {
-	//	(void)div;
-	//}
+	EuclideanVector& EuclideanVector::operator/=(double div) {
+		std::transform(vector_, vector_ + dimension_, vector_, [&](double in) {return in / div;});
+		return *this;
+	}
 
-	//EuclideanVector::EuclideanVector& operator*=(double mult) {
-	//	(void)mult;
-	//}
+	EuclideanVector& EuclideanVector::operator*=(double mult) {
+		std::transform(vector_, vector_ + dimension_, vector_, [&](double in) {return in * mult;});
+		return *this;
+	}
 
 	//EuclideanVector::operator std::vector<double>() const {
 	//	return {};
@@ -140,49 +134,49 @@ namespace evec{
 	//	return true;
 	//}
 
-	//EuclideanVector operator+(const EuclideanVector& one, const EuclideanVector& two) {
-	//	(void)one;
-	//	(void)two;
-	//	return {0};
-	//}
+	EuclideanVector operator+(const EuclideanVector& one, const EuclideanVector& two) {
+		auto out = one;
+		out += two;
+		return std::move(out);
+	}
 
-	//EuclideanVector operator-(const EuclideanVector& one, const EuclideanVector& two) {
-	//	(void)one;
-	//	(void)two;
-	//	return {0};
-	//}
+	EuclideanVector operator-(const EuclideanVector& one, const EuclideanVector& two) {
+		auto out = one;
+		out -= two;
+		return std::move(out);
+	}
 
-	//EuclideanVector operator*(const EuclideanVector& one, const EuclideanVector& two) {
-	//	(void)one;
-	//	(void)two;
-	//	return {0};
-	//}
+	double operator*(const EuclideanVector& one, const EuclideanVector& two) {
+		double out = 0;
+		for(unsigned int i = 0; i < one.getNumDimensions(); i++){
+			out += one.get(i) * two.get(i);
+		}
+		return out;
+	}
 
-	//EuclideanVector operator*(unsigned int mult, const EuclideanVector& vec) {
-	//	(void)vec;
-	//	(void)mult;
-	//	return {0};
-	//}
+	EuclideanVector operator*(unsigned int mult, const EuclideanVector& vec) {
+		return vec * mult;
+	}
 
-	//EuclideanVector operator*(const EuclideanVector& vec, unsigned int mult) {
-	//	(void)vec;
-	//	(void)mult;
-	//	return {0};
-	//}
+	EuclideanVector operator*(const EuclideanVector& vec, unsigned int mult) {
+		auto out = vec;
+		out /= mult;
+		return std::move(out);
+	}
 
-	//EuclideanVector operator/(const EuclideanVector& vec, unsigned int div) {
-	//	(void)vec;
-	//	(void)div;
-	//	return {0};
-	//}
+	EuclideanVector operator/(const EuclideanVector& vec, double div) {
+		auto out = vec;
+		out /= div;
+		return std::move(out);
+	}
 
 	std::ostream& operator<<(std::ostream& os, const EuclideanVector& vec) {
 		os << '[';
 
-		if(vec.vector_ != nullptr && vec.dimension_) {
-			os << vec.vector_[0];
-			for(unsigned int i = 1; i < vec.dimension_; i++){
-				os << ' ' << vec.vector_[i];
+		if(vec.getNumDimensions()) {
+			os << vec.get(0);
+			for(unsigned int i = 1; i < vec.getNumDimensions(); i++){
+				os << ' ' << vec.get(i);
 			}
 		}
 

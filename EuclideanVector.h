@@ -5,6 +5,8 @@
 #include <list>
 #include <initializer_list>
 #include <iostream>
+#include <cmath>
+#include <numeric>
 
 namespace evec{
 	class EuclideanVector{
@@ -17,46 +19,41 @@ namespace evec{
 			EuclideanVector();
 			EuclideanVector(unsigned int);
 			EuclideanVector(unsigned int, double);
-			EuclideanVector(const std::vector<double>::iterator&, const std::vector<double>::iterator&);
-			EuclideanVector(const std::list<double>::iterator&, const std::list<double>::iterator&);
 			EuclideanVector(const std::initializer_list<double>&); 
 			EuclideanVector(const EuclideanVector&); 
 			EuclideanVector(EuclideanVector&&); 
+			template<class It> 
+				inline EuclideanVector(It start, It end) : EuclideanVector(std::distance(start, end)) {
+					std::copy(start, end, vector_);
+				}
+
 			~EuclideanVector() noexcept;
 
 			EuclideanVector& operator=(const EuclideanVector&);
 			EuclideanVector& operator=(EuclideanVector&&);
 
-			inline unsigned int getNumDimensions() const {
-				return dimension_;
-			}
-
-			inline double get(unsigned int at) const {
-				return vector_[at];
-			}
-
+			inline unsigned int getNumDimensions() const { return dimension_; }
+			double get(unsigned int at) const;
 			double getEuclideanNorm();
-			EuclideanVector createUnitVector() const;
-			//double operator[](unsigned int) const;
-			//double& operator[](unsigned int);
-			//EuclideanVector& operator+=(const EuclideanVector&);
-			//EuclideanVector& operator-=(const EuclideanVector&);
-			//EuclideanVector& operator/=(double);
-			//EuclideanVector& operator*=(double);
+			EuclideanVector createUnitVector();
+			double operator[](unsigned int) const;
+			double& operator[](unsigned int);
+			EuclideanVector& operator+=(const EuclideanVector&);
+			EuclideanVector& operator-=(const EuclideanVector&);
+			EuclideanVector& operator/=(double);
+			EuclideanVector& operator*=(double);
 			//operator std::vector<double>() const;
 			//operator std::list<double>() const;
-			//
-			friend std::ostream& operator<<(std::ostream&, const EuclideanVector&);
 	};
 
 	//bool operator==(const EuclideanVector&, const EuclideanVector&);
 	//bool operator!=(const EuclideanVector&, const EuclideanVector&);
-	//EuclideanVector operator+(const EuclideanVector&, const EuclideanVector&);
-	//EuclideanVector operator-(const EuclideanVector&, const EuclideanVector&);
-	//EuclideanVector operator*(const EuclideanVector&, const EuclideanVector&);
-	//EuclideanVector operator*(unsigned int, const EuclideanVector&);
-	//EuclideanVector operator*(const EuclideanVector&, unsigned int);
-	//EuclideanVector operator/(const EuclideanVector&, unsigned int);
+	EuclideanVector operator+(const EuclideanVector&, const EuclideanVector&);
+	EuclideanVector operator-(const EuclideanVector&, const EuclideanVector&);
+	double operator*(const EuclideanVector&, const EuclideanVector&);
+	EuclideanVector operator*(unsigned int, const EuclideanVector&);
+	EuclideanVector operator*(const EuclideanVector&, unsigned int);
+	EuclideanVector operator/(const EuclideanVector&, double);
 	std::ostream& operator<<(std::ostream&, const EuclideanVector&);
 } //evec
 
