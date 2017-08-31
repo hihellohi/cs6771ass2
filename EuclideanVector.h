@@ -4,9 +4,6 @@
 #include <vector>
 #include <list>
 #include <initializer_list>
-#include <iostream>
-#include <cmath>
-#include <numeric>
 
 namespace evec{
 	class EuclideanVector{
@@ -42,12 +39,14 @@ namespace evec{
 			EuclideanVector& operator-=(const EuclideanVector&);
 			EuclideanVector& operator/=(double);
 			EuclideanVector& operator*=(double);
-			//operator std::vector<double>() const;
-			//operator std::list<double>() const;
+			operator std::vector<double>() const;
+			operator std::list<double>() const;
+			
+			friend bool operator==(const EuclideanVector&, const EuclideanVector&);
 	};
 
-	//bool operator==(const EuclideanVector&, const EuclideanVector&);
-	//bool operator!=(const EuclideanVector&, const EuclideanVector&);
+	bool operator==(const EuclideanVector&, const EuclideanVector&);
+	bool operator!=(const EuclideanVector&, const EuclideanVector&);
 	EuclideanVector operator+(const EuclideanVector&, const EuclideanVector&);
 	EuclideanVector operator-(const EuclideanVector&, const EuclideanVector&);
 	double operator*(const EuclideanVector&, const EuclideanVector&);

@@ -6,7 +6,7 @@
 
 int main() {
 	
-	evec::EuclideanVector a(0);	
+	evec::EuclideanVector a(2);	
 	
 	std::list<double> l {1,2,3};
 	evec::EuclideanVector b{l.begin(),l.end()};
@@ -58,23 +58,23 @@ int main() {
 	evec::EuclideanVector j = b / 2;
 	std::cout << j << std::endl;
 	
-	//std::cout << "dot product = " << j * b << std::endl;
-	//
-	//if (g == (e - d)) std::cout << "true" << std::endl;
-	//if (j != b ) std::cout << "false" << std::endl;
-	//
+	std::cout << "dot product = " << j * b << std::endl;
+	
+	if (g == (e - d)) std::cout << "true" << std::endl;
+	if (j != b ) std::cout << "false" << std::endl;
+	
 	j[0] = 1;
 	std::cout << j << std::endl;
 	
-	//// type cast from EuclideanVector to a std::vector
-	//std::vector<double> vj = j;
-	//
-	//// type cast from EuclideanVector to a std::vector
-	//std::list<double> lj = j;
-	//
-	//for (auto d : lj) {
-	//	std::cout << d << std::endl;
-	//}
+	// type cast from EuclideanVector to a std::vector
+	std::vector<double> vj = j;
+	
+	// type cast from EuclideanVector to a std::vector
+	std::list<double> lj = j;
+	
+	for (auto d : lj) {
+		std::cout << d << std::endl;
+	}
 
 	// list initialisation
         evec::EuclideanVector k {1, 2, 3};

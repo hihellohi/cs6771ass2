@@ -1,5 +1,8 @@
 #include <limits>
 #include <algorithm>
+#include <iostream>
+#include <cmath>
+#include <numeric>
 #include "EuclideanVector.h"
 
 namespace evec{
@@ -31,19 +34,24 @@ namespace evec{
 			delete vector_;
 			vector_ = nullptr;
 		}
-		dimension_ = 0;
-		norm_ = std::numeric_limits<double>::quiet_NaN();
 	}
 
 
 	EuclideanVector& EuclideanVector::operator=(const EuclideanVector& other) {
 		if(this != &other) {
 			if(other.vector_ == nullptr){
-				this->~EuclideanVector();
+				if(vector_ != nullptr){
+					delete vector_;
+					vector_ = nullptr;
+				}
+				dimension_ = 0;
+				norm_ = std::numeric_limits<double>::quiet_NaN();
 			}
 			else{
 				if(vector_ == nullptr || dimension_ != other.dimension_){
-					this->~EuclideanVector();
+					if(vector_ != nullptr){
+						delete vector_;
+					}
 					vector_ = new double[other.dimension_];
 					dimension_ = other.dimension_;
 				}
@@ -57,7 +65,9 @@ namespace evec{
 
 	EuclideanVector& EuclideanVector::operator=(EuclideanVector&& other) {
 		if(this != &other) {
-			this->~EuclideanVector();
+			if(vector_ != nullptr){
+				delete vector_;
+			}
 			dimension_ = other.dimension_;
 			vector_ = other.vector_;
 			norm_ = other.norm_;
@@ -74,9 +84,14 @@ namespace evec{
 	}
 
 	double EuclideanVector::getEuclideanNorm() {
-		if(std::isnan(norm_)){
-			norm_ = sqrt(std::accumulate(vector_, vector_ + dimension_, 0, 
-						[](double x, double y) { return x + y * y; }));
+		if(std::isnan(norm_)) {
+			if(dimension_) {
+				norm_ = sqrt(std::accumulate(vector_, vector_ + dimension_, 0.0, 
+							[](double x, double y) { return x + y * y; }));
+			}
+			else {
+				norm_ = 0;
+			}
 		}
 		return norm_;
 	}
@@ -113,26 +128,22 @@ namespace evec{
 		return *this;
 	}
 
-	//EuclideanVector::operator std::vector<double>() const {
-	//	return {};
-	//}
+	EuclideanVector::operator std::vector<double>() const {
+		return {vector_, vector_ + dimension_};
+	}
 
-	//EuclideanVector::operator std::list<double>() const {
-	//	return {};
-	//}
+	EuclideanVector::operator std::list<double>() const {
+		return {vector_, vector_ + dimension_};
+	}
 
 
-	//bool operator==(const EuclideanVector& one, const EuclideanVector& two) {
-	//	(void)one;
-	//	(void)two;
-	//	return false;
-	//}
+	bool operator==(const EuclideanVector& one, const EuclideanVector& two) {
+		return one.dimension_ == two.dimension_ && std::equal(one.vector_, one.vector_ + one.dimension_, two.vector_);
+	}
 
-	//bool operator!=(const EuclideanVector& one, const EuclideanVector& two) {
-	//	(void)one;
-	//	(void)two;
-	//	return true;
-	//}
+	bool operator!=(const EuclideanVector& one, const EuclideanVector& two) {
+		return !(one == two);
+	}
 
 	EuclideanVector operator+(const EuclideanVector& one, const EuclideanVector& two) {
 		auto out = one;
