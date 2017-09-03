@@ -10,7 +10,7 @@ namespace evec{
 		private:
 			double *vector_;
 			unsigned int dimension_;
-			double norm_;
+			mutable double norm_;
 
 		public:
 			EuclideanVector();
@@ -31,8 +31,8 @@ namespace evec{
 
 			inline unsigned int getNumDimensions() const { return dimension_; }
 			double get(unsigned int at) const;
-			double getEuclideanNorm();
-			EuclideanVector createUnitVector();
+			double getEuclideanNorm() const;
+			EuclideanVector createUnitVector() const;
 			double operator[](unsigned int) const;
 			double& operator[](unsigned int);
 			EuclideanVector& operator+=(const EuclideanVector&);

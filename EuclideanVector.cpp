@@ -83,7 +83,7 @@ namespace evec{
 		return (*this)[at];
 	}
 
-	double EuclideanVector::getEuclideanNorm() {
+	double EuclideanVector::getEuclideanNorm() const {
 		if(std::isnan(norm_)) {
 			if(dimension_) {
 				norm_ = sqrt(std::accumulate(vector_, vector_ + dimension_, 0.0, 
@@ -96,7 +96,7 @@ namespace evec{
 		return norm_;
 	}
 
-	EuclideanVector EuclideanVector::createUnitVector() {
+	EuclideanVector EuclideanVector::createUnitVector() const {
 		return *this / getEuclideanNorm();
 	}
 
