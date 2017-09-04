@@ -31,7 +31,7 @@ namespace evec{
 
 	EuclideanVector::~EuclideanVector() noexcept {
 		if(vector_ != nullptr){
-			delete vector_;
+			delete [] vector_;
 			vector_ = nullptr;
 		}
 	}
@@ -41,7 +41,7 @@ namespace evec{
 		if(this != &other) {
 			if(other.vector_ == nullptr){
 				if(vector_ != nullptr){
-					delete vector_;
+					delete [] vector_;
 					vector_ = nullptr;
 				}
 				dimension_ = 0;
@@ -50,7 +50,7 @@ namespace evec{
 			else{
 				if(vector_ == nullptr || dimension_ != other.dimension_){
 					if(vector_ != nullptr){
-						delete vector_;
+						delete [] vector_;
 					}
 					vector_ = new double[other.dimension_];
 					dimension_ = other.dimension_;
@@ -66,7 +66,7 @@ namespace evec{
 	EuclideanVector& EuclideanVector::operator=(EuclideanVector&& other) {
 		if(this != &other) {
 			if(vector_ != nullptr){
-				delete vector_;
+				delete [] vector_;
 			}
 			dimension_ = other.dimension_;
 			vector_ = other.vector_;
