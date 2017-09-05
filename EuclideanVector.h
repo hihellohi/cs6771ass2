@@ -50,8 +50,8 @@ namespace evec{
 	EuclideanVector operator+(const EuclideanVector&, const EuclideanVector&);
 	EuclideanVector operator-(const EuclideanVector&, const EuclideanVector&);
 	double operator*(const EuclideanVector&, const EuclideanVector&);
-	EuclideanVector operator*(unsigned int, const EuclideanVector&);
-	EuclideanVector operator*(const EuclideanVector&, unsigned int);
+	EuclideanVector operator*(double, const EuclideanVector&);
+	EuclideanVector operator*(const EuclideanVector&, double);
 	EuclideanVector operator/(const EuclideanVector&, double);
 	std::ostream& operator<<(std::ostream&, const EuclideanVector&);
 } //evec

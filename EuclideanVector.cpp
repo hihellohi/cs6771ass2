@@ -23,7 +23,6 @@ namespace evec{
 
 	EuclideanVector::EuclideanVector(EuclideanVector&& other) 
 		: vector_{other.vector_}, dimension_{other.dimension_}, norm_{std::numeric_limits<double>::quiet_NaN()} {
-
 		other.vector_ = nullptr;
 		other.dimension_ = 0;
 		other.norm_ = std::numeric_limits<double>::quiet_NaN();
@@ -48,7 +47,7 @@ namespace evec{
 				norm_ = std::numeric_limits<double>::quiet_NaN();
 			}
 			else{
-				if(vector_ == nullptr || dimension_ != other.dimension_){
+				if(vector_ == nullptr || dimension_ != other.dimension_) {
 					if(vector_ != nullptr){
 						delete [] vector_;
 					}
@@ -105,25 +104,39 @@ namespace evec{
 	}
 
 	double& EuclideanVector::operator[](unsigned int at) {
+		norm_ = std::numeric_limits<double>::quiet_NaN();
+
 		return vector_[at];
 	}
 
 	EuclideanVector& EuclideanVector::operator+=(const EuclideanVector& other) {
+		norm_ = std::numeric_limits<double>::quiet_NaN();
+
 		std::transform(vector_, vector_ + dimension_, other.vector_, vector_, std::plus<double>());
 		return *this;
 	}
 
 	EuclideanVector& EuclideanVector::operator-=(const EuclideanVector& other) {
+		norm_ = std::numeric_limits<double>::quiet_NaN();
+
 		std::transform(vector_, vector_ + dimension_, other.vector_, vector_, std::minus<double>());
 		return *this;
 	}
 
 	EuclideanVector& EuclideanVector::operator/=(double div) {
+		if(!std::isnan(norm_)) {
+			norm_ /= fabs(div);
+		}
+
 		std::transform(vector_, vector_ + dimension_, vector_, [&](double in) {return in / div;});
 		return *this;
 	}
 
 	EuclideanVector& EuclideanVector::operator*=(double mult) {
+		if(!std::isnan(norm_)){
+			norm_ *= fabs(mult);
+		}
+
 		std::transform(vector_, vector_ + dimension_, vector_, [&](double in) {return in * mult;});
 		return *this;
 	}
@@ -146,15 +159,15 @@ namespace evec{
 	}
 
 	EuclideanVector operator+(const EuclideanVector& one, const EuclideanVector& two) {
-		auto out = one;
+		auto out(one);
 		out += two;
-		return std::move(out);
+		return out;
 	}
 
 	EuclideanVector operator-(const EuclideanVector& one, const EuclideanVector& two) {
-		auto out = one;
+		auto out(one);
 		out -= two;
-		return std::move(out);
+		return out;
 	}
 
 	double operator*(const EuclideanVector& one, const EuclideanVector& two) {
@@ -165,20 +178,20 @@ namespace evec{
 		return out;
 	}
 
-	EuclideanVector operator*(unsigned int mult, const EuclideanVector& vec) {
+	EuclideanVector operator*(double mult, const EuclideanVector& vec) {
 		return vec * mult;
 	}
 
-	EuclideanVector operator*(const EuclideanVector& vec, unsigned int mult) {
-		auto out = vec;
-		out /= mult;
-		return std::move(out);
+	EuclideanVector operator*(const EuclideanVector& vec, double mult) {
+		auto out(vec);
+		out *= mult;
+		return out;
 	}
 
 	EuclideanVector operator/(const EuclideanVector& vec, double div) {
-		auto out = vec;
+		auto out(vec);
 		out /= div;
-		return std::move(out);
+		return out;
 	}
 
 	std::ostream& operator<<(std::ostream& os, const EuclideanVector& vec) {
