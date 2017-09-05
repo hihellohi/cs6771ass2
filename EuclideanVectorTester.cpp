@@ -77,6 +77,17 @@ int main() {
 	}
 
 	// list initialisation
-        evec::EuclideanVector k {1, 2, 3};
-        std::cout << k << std::endl;
+	evec::EuclideanVector k {1, 2, 3};
+	std::cout << k << std::endl;
+	std::cout << k.getEuclideanNorm() << std::endl;
+	k[1] = 0;
+	std::cout << k << k.getEuclideanNorm() << std::endl;
+	k *= -4;
+	std::cout << k << k.getEuclideanNorm() << std::endl;
+	k /= 3;
+	std::cout << k << k.getEuclideanNorm() << std::endl;
+
+	auto m = k * -9;
+
+	std::cout << m << m.getEuclideanNorm() << std::endl;
 }
